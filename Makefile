@@ -1,3 +1,19 @@
+# Makefile - download statistics and prepare datafiles for salHUD
+# Copyright 2013 - Roberto Arce Corretjer <racorretjer@gmail.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 all: ypll-2008.csv ypll-2007.csv ypll-2006.csv ypll-2005.csv ypll-2004.csv ypll-2003.csv ypll-2002.csv ypll-2001.csv ypll-2000.csv
 
 ypll-2008.csv: basic-death-2008.txt basic-death.py
