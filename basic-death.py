@@ -1,24 +1,7 @@
 # basic-death.py - Parse basic death data from instituto de estadisticas
-# Copyright 2013 - Humberto Ortiz-Zuazaga <humberto.ortiz@upr.edu>
+# Copyright 2013 - Humberto Ortiz-Zuazaga
+# GPL v3
 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# Data files available from Instituto de Estadisticas de Puerto Rico
-# http://www.estadisticas.gobierno.pr/iepr/Estadisticas/Basesdedatos/Salud.aspx#CDC_mort_ba
-    
-# Data dictionary http://www.estadisticas.gobierno.pr/iepr/LinkClick.aspx?fileticket=FwwQOEgXp1s%3d&tabid=95
-    
 # age at death
 # ageunits
 # 0 menos de 100
@@ -34,7 +17,6 @@
 # from 0 to 99 in the correct units
 
 def age(units, number):
-    #print [units, number]
     if number == ' ':
         return None
     
@@ -72,12 +54,11 @@ import csv
 
 munimap = {}
 
-with open("municipios-fipsV2.csv","r") as municipios:
-    munireader = csv.reader(municipios)
-    for row in munireader:
-        munimap[ row[2]] = row[0]
-        
-        
+with open("municipios-fipsV3.csv","r") as munic:
+    munic_reader = csv.reader(munic)
+    for fields in munic_reader:
+        munimap[fields[2]] = fields[0]
+
 bycounty = defaultdict(int)
 bydeath = defaultdict(lambda : defaultdict(int))
 
@@ -100,34 +81,48 @@ for line in fileinput.input():
     fields = line.split(",")
     if fields[0] == "staymunnumunit":
         headers = fields
+	yearidx = headers.index("yeardeath")
         unitidx = headers.index("ageunit")
         numbidx = headers.index("ageunitnumber")
         continue
     
     icd = fields[headers.index("cod_icd10")]
-    #print icd, 
+    year = fields[yearidx]
     m = reg_exp.search(icd)
     if m:
-	cause = m.lastgroup # the name of the group that matched
+	cause = m.lastgroup # prints the name of the group that matched
     else:
         cause = "other"
 
     country = fields[headers.index("countryresidence")]
     municipio = fields[headers.index("placeresidence")]
     if country == "1":
-        municipio = munimap[municipio]
-        
+        try:
+                municipio = munimap[municipio]
+        except KeyError:
+                continue
+
         bycounty[municipio] += ypll(age(fields[unitidx], fields[numbidx]))
         bydeath[municipio][cause] += ypll(age(fields[unitidx], fields[numbidx]))
-    
-#
-# output to json for plotting with atlaspr
-import json
 
-data = []
-for county in bycounty.keys():
-    data.append(bydeath[county])
-    data[-1]["fips"] = county
-    data[-1]["ypll"] = bycounty[county]
-    
-print json.dumps(data)
+#Writing to CSV
+
+myCSV = open("ypll.csv", 'wb')
+
+myWriter = csv.writer(myCSV)
+
+#Data
+for county in sorted(bycounty.keys(), key = int):
+    data = []
+    data.append(county)
+    data.append(bycounty[county])
+
+    for cause in causes:
+	data.append(bydeath[county][cause])
+
+    data.append(year)
+
+    myWriter.writerow(data)
+
+myCSV.close()
+
