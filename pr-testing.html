@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<meta charset = "utf-8">
+		<title>PR Total Population Visualization</title>
+		<script type = "text/javascript" src = "http://d3js.org/d3.v3.min.js"></script>
+		<script type = "text/javascript" src = "http://d3js.org/topojson.v1.min.js"></script>
+
+		<style>
+
+			.boundary {
+				fill: none;
+				stroke: #999;
+				}
+			
+		</style>
+	</head>
+
+	<body>
+
+		<h1>PR Total Population Visualization</h1>
+
+		<script type = "text/javascript">
+
+			var width = 1200;
+			var height = 700;
+
+			var path = d3.geo.path()
+				.projection(null);
+
+			var color = d3.scale.quantize()
+				.range(["rgb(255, 247, 251)", "rgb(236, 226, 240)", "rgb(208, 209, 230)",
+					"rgb(166, 189, 219)", "rgb(103, 169, 207)", "rgb(54, 144, 192)",
+					"rgb(2, 129, 138)", "rgb(1, 108, 89)", "rgb(1, 70, 54)"]);
+
+			var svg = d3.select("body")
+				.append("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			d3.csv("PR-FIPS.csv", function(error, data) {
+
+				color.domain([
+					d3.min(data, function(d) { return d.population; }), 
+					d3.max(data, function(d) { return d.population; })
+					]);
+
+				d3.json("pr.json", function(error, pr) {
+
+					for(var i = 0; i < data.length; i++) {
+
+						var dataID = data[i].id;
+						var dataPopulation = parseFloat(data[i].population);
+
+						for(var j = 0; j < pr.objects.municipios.geometries.length; j++) {
+
+							var prID = pr.objects.municipios.geometries[j].properties.id;
+
+							if(dataID == prID) {
+
+								pr.objects.municipios.geometries[j].properties.population = dataPopulation;
+								break;
+
+								}
+
+							}
+
+						}
+
+					svg.selectAll("path")
+						.data(topojson.feature(pr, pr.objects.municipios).features)
+						.enter()
+						.append("path")
+						.attr("d", path)
+						.style("fill", function(d) {
+
+							var value = d.properties.population;
+
+							if(value) {
+
+								return color(value);
+
+								}
+
+							else {
+
+								return "#000";
+
+								}
+
+							});
+
+					svg.append("path")
+						.datum(topojson.mesh(pr, pr.objects.municipios, function(a, b, c) { return a !== b !== c; }))
+						.attr("class", "boundary")
+						.attr("d", path);
+
+					});
+
+				});
+
+		</script>
+
+	</body>
+
+</html>

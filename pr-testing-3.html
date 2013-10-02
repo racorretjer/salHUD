@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<meta charset = "utf-8">
+		<title>PR Visualization</title>
+		<script type = "text/javascript" src = "http://d3js.org/d3.v3.min.js"></script>
+		<script type = "text/javascript" src = "http://d3js.org/topojson.v1.min.js"></script>
+		<style type = "text/css">
+
+			path {
+				fill: #ccc;
+				stroke: #000;
+				}
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<h1>PR Visualization</h1>
+
+		<div align = "left">
+			<select id = "years">
+				<option selected value = 0>2000</option>
+				<option value = 1>2001</option>
+				<option value = 2>2002</option>
+				<option value = 3>2003</option>
+				<option value = 4>2004</option>
+				<option value = 5>2005</option>
+				<option value = 6>2006</option>
+				<option value = 7>2007</option>
+				<option value = 8>2008</option>
+			</select>
+		</div>
+
+		<div align = "right">
+			<select id = "death">
+				<option value = "accident">Accident</option>
+				<option value = "alzheimer">Alzheimer</option>
+				<option value = "cardio">Cardiovascular</option>
+				<option value = "cerebrovascular">Cerebrovascular</option>
+				<option value = "diabetes">Diabetes</option>
+				<option value = "homicide">Homicide</option>
+				<option selected value = "municipio_total">County Total</option>
+				<option value = "nefritis">Nefritis</option>
+				<option value = "pneumonia">Pneumonia</option>
+				<option value = "respiratory">Respiratory</option>
+				<option value = "tumor">Tumor</option>
+			</select>
+		</div>
+
+		<script type = "text/javascript">
+
+			var width = 1200;
+			var height = 700;
+
+			var path = d3.geo.path()
+					.projection(null);
+
+			var color = d3.scale.quantize()
+					.range(["rgb(255, 255, 212)","rgb(254, 227, 145)","rgb(254, 196, 79)",
+						"rgb(254, 153, 41)","rgb(217, 95, 14)","rgb(153, 52, 4)"]);
+
+			var svg = d3.select("body")
+					.append("svg")
+					.attr("width", width)
+					.attr("height", height);
+
+			var gdata;
+
+			var properties = [];
+
+			d3.csv("ypll.csv", function(error, data) {
+
+				//saves the csv in a global variable for later use.
+				gdata = data;
+
+				var column = document.getElementById("death")
+						[document.getElementById("death")
+						.selectedIndex].value;
+
+				color.domain([
+
+					d3.min(data, function(d) { return parseFloat(d[column]); }),
+					d3.max(data, function(d) { return parseFloat(d[column]); })
+
+						]);
+	
+				d3.json("pr.json", function(error, pr) {
+
+					var obj = pr.objects.municipios;
+
+					for(var c = 0; c < obj.geometries.length; c++) {
+
+						obj.geometries[c].properties.year = [];
+
+						}
+
+					for(var i = 0; i < data.length; i++) {
+
+						var property = {};
+						property.id = parseInt(data[i].id);
+						property.municipio_total = parseFloat(data[i].municipio_total);
+						property.cardio = parseFloat(data[i].cardio);
+						property.tumor = parseFloat(data[i].tumor);
+						property.diabetes = parseFloat(data[i].diabetes);
+						property.alzheimer = parseFloat(data[i].alzheimer);
+						property.cerebrovascular = parseFloat(data[i].cerebrovascular);
+						property.respiratory = parseFloat(data[i].respiratory);
+						property.accident = parseFloat(data[i].accident);
+						property.nefritis = parseFloat(data[i].nefritis);
+						property.homicide = parseFloat(data[i].homicide);
+						property.pneumonia = parseFloat(data[i].pneumonia);
+						property.year = parseInt(data[i].year);
+
+						properties.push(property);
+
+						for(var j = 0; j < obj.geometries.length; j++) {
+
+							var prID = obj.geometries[j].properties.id;
+
+							if(properties[i].id == prID) {
+
+								obj.geometries[j].properties.year[properties[i].year - 2000] = properties[i];
+								break;
+
+								}
+
+							}
+
+						}
+
+					//Fill the counties with color
+					svg.selectAll("path")
+						.data(topojson.feature(pr, obj).features)
+						.enter()
+						.append("path")
+						.attr("d", path)
+						.style("fill", function(d) {
+
+							var value = d.properties.year
+									[parseInt(document.getElementById("years")
+									[document.getElementById("years")
+									.selectedIndex].value)][column];
+
+							if(value) { return color(value); }
+
+							else { return "#ccc"; }
+
+							})
+
+						.on("click", function(d) {
+
+							var county = d.properties.name;
+
+							var year = document.getElementById("years").selectedIndex;
+
+							var death = document.getElementById("death")
+								[document.getElementById("death")
+								.selectedIndex].value;
+
+							var value = d.properties.year
+								[parseInt(document.getElementById("years")
+								[year].value)][death];
+
+							alert(county + ": " + parseInt(value));
+
+							})
+
+						.on("mouseover", function() {
+
+							d3.select(this)
+								.style("fill", "green")
+								.style("stroke-width", "1.8");
+
+							})
+
+						.on("mouseout", function(d) {
+
+							d3.select(this)
+								.transition()
+								.duration(250)
+								.style("fill", function(d) {
+
+									var year = document.getElementById("years").selectedIndex;
+
+									var death = document.getElementById("death")
+										[document.getElementById("death")
+										.selectedIndex].value;
+
+									var value = d.properties.year
+										[parseInt(document.getElementById("years")
+										[year].value)][death];
+
+									color.domain([
+
+										d3.min(gdata, function(d) { return parseFloat(d[death]); }),
+										d3.max(gdata, function(d) { return parseFloat(d[death]); })
+
+										]);
+
+									if(value) { return color(value); }
+
+									else { return "#ccc"; }
+
+									})
+
+								.style("stroke-width", "1");
+
+							});
+
+				});
+
+			});
+
+			//Update
+			d3.selectAll("select").on("change", change);
+
+			function change() {
+
+				if(this.id === "years") { transitionYears(); }
+
+				else { transitionDeaths(); }
+
+				};
+
+			function transitionYears() {
+
+				var newYear = document.getElementById("years").selectedIndex;
+
+				var death = document.getElementById("death")
+						[document.getElementById("death")
+						.selectedIndex].value;
+
+				svg.selectAll("path")
+					.transition()
+					.duration(750)
+					.style("fill", function(d) {
+
+						var value = d.properties.year
+								[parseInt(document.getElementById("years")
+								[newYear].value)][death];
+
+						if(value) { return color(value); }
+
+						else { return "#ccc"; }
+
+					});
+
+				};
+
+			function transitionDeaths() {
+
+				var year = document.getElementById("years").selectedIndex;
+
+				var newDeath = document.getElementById("death")
+						[document.getElementById("death")
+						.selectedIndex].value;
+
+				color.domain([
+
+					d3.min(gdata, function(d) { return parseFloat(d[newDeath]); }),
+					d3.max(gdata, function(d) { return parseFloat(d[newDeath]); })
+
+					]);
+
+				svg.selectAll("path")
+					.transition()
+					.duration(750)
+					.style("fill", function(d) {
+
+						var value = d.properties.year
+								[parseInt(document.getElementById("years")
+								[year].value)][newDeath];
+
+						if(value) { return color(value); }
+
+						else { return "#ccc"; }
+
+					});
+
+				};
+						
+		</script>
+
+	</body>
+
+</html>
