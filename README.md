@@ -28,3 +28,5 @@ libraries, and requires TopoJSON's functionality to generate a JSON
 file from which to pull map polygons and map data. It also has
 human-computer interaction which allows the user to analyze
 the results visually.
+
+The Makefile is not, broken, but its not complete.
