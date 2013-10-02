@@ -1,135 +1,289 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
-<HTML>
-<HEAD>
-<meta name="author" content="Roberto Arce Corretjer, Jose Conde,
-        Humberto Ortiz-Zuazaga, Juan Sola Sloan">
-<META  name="description" content="Demo public health heads-up display">
-<TITLE>salHUD</TITLE>
-<meta http-equiv="Content-Type" content="text/html;
-        charset=utf-8">
-<script src="./js/lib/d3.js"></script>
-<script src="./js/lib/klass.js"></script>
-<script src="./js/atlaspr.js"></script>
-</head>
-<body>
-<center>
-  <H1>Years of Potential Life Lost, Puerto Rico 2008</h1>
-<div id="oracion_">
-  For all Causes of Death
-</div>
-</center>
-<div id = 'map'></div>
-  <script type = 'text/javascript'>
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<meta charset = "utf-8">
+		<title>PR Visualization</title>
+		<script type = "text/javascript" src = "http://d3js.org/d3.v3.min.js"></script>
+		<script type = "text/javascript" src = "http://d3js.org/topojson.v1.min.js"></script>
+		<style type = "text/css">
 
-function dibujalo(p1) {
-  var my_node = document.getElementById("map");
-  my_node.innerHTML = "";
-  var datamap = {};
-  var map;
-  d3.json("all-causes.json", function(data){
-    data.forEach(function(pueblo){
-      var fips_3digits = pueblo.fips.length == 1 ? ("00" + pueblo.fips) : 
-      (pueblo.fips.length == 2 ? ("0" + pueblo.fips) : pueblo.fips);
-      // select which cause of death to plot
-      var rv ;
-      switch(Number(p1)) {
-        case 1: rv = pueblo.ypll; break;
-        case 2: rv = pueblo.cardio; break;
-        case 3: rv = pueblo.tumor; break;
-        case 4: rv = pueblo.diabetes; break;
-        case 5: rv = pueblo.alzheimer; break;
-        case 6: rv = pueblo.cerebrovascular; break;
-        case 7: rv = pueblo.respiratory; break;
-        case 8: rv = pueblo.accident; break;
-        case 9: rv = pueblo.nefritis; break;
-        case 10: rv = pueblo.homicide; break;
-        case 11: rv = pueblo.pneumonia; break;
-        case 12: rv = pueblo.other; break;
-        // default : rv = pueblo.ypll; 
-       }
-       datamap[fips_3digits] = rv;
-    });
-  // 
-    map = new AtlasPR({
-      node: my_node,
-      tiles: 'pueblos',
-      size: "large",
-      on_ready: function(){
-        map.encode_quan(datamap);
-      },
-      events: {on_click: function(feature,
-  svg_path){alert(feature.properties.NAME + "\n" + Math.floor(datamap[feature.properties.COUNTY]) );}}
-  });});
-}
-  </script>
-  <script language="JavaScript">
-   function causasMan(p1) {
-      dibujalo(p1.value);
-      handleOracion(p1.value);
-   }
-   function handleOracion(num) {
-       var oracion = document.getElementById("oracion_");
-       var rv = new String();
-       switch(Number(num)) {
-        case 1: rv = "For All Causes of Death"; break;
-        case 2: rv = "For Heart Disease"; break;
-        case 3: rv = "For Cancer"; break;
-        case 4: rv = "For Diabetes"; break;
-        case 5: rv = "For Alzheimer's Disease"; break;
-        case 6: rv = "For Cerebrovascular Disease"; break;
-        case 7: rv = "For Chronic Lower Airway Respiratory Disease"; break;
-        case 8: rv = "For Unintentional Injuries"; break;
-        case 9: rv = "For Renal Disease"; break;
-        case 10: rv = "For Homicide"; break;
-        case 11: rv = "For Pneumonia and Influenza"; break; 
-        case 12: rv = "For Other Causes"; break; 
-       }
-       oracion.innerHTML="<h3>" + rv + "</h3>" ;
-   }
+			path {
+				fill: #ccc;
+				stroke: #000;
+				}
 
-</script>
+		</style>
 
-<table border=0><tr><td>
-<select name="causas" onchange="causasMan(this)">
- <option value="1">All Causes of Death</option>
- <option value="2">Heart Disease</option>
- <option value="3">Cancer</option>
- <option value="4">Diabetes</option>
- <option value="5">Alzheimer's Disease</option>
- <option value="6">Cerebrovascular Disease</option>
- <option value="7">Chronic Lower Airway Respiratory Disease</option>
- <option value="8">Unintentional Injuries</option>
- <option value="9">Renal Disease</option>
- <option value="10">Homicide</option>
- <option value="11">Pneumonia and Influenza</option>
- <option value="12">Other Causes</option>
- </select>
-</table>
-<script languange="javascript">
-     dibujalo(1);
-     handleOracion(1);
-</script>
-<p>Demo of salHUD, a heads-up display for public health data. Click on
-a municipality to display the Years of Potential Life Lost (YPLL) due to
-premature death among the residents of the indicated municipality by
-the selected cause of death.
-</p>
+	</head>
 
-<p>Full source code for the demo is available <a
- href="https://github.com/humberto-ortiz/salHUD">on github</a>.  </p>
+	<body>
 
-<p>The salHUD demo is a collaboration between hackers from three <a
- href="http://www.upr.edu/">UPR</a> campuses for the <a
- href="https://www.hackerleague.org/hackathons/puerto-rico-tech-summit-hackathon">Puerto
-Rico Tech Summit Hackathon</a>. Participants are:
-<ul>
-  <li><p>Roberto Arce Corretjer - <a href="http://www.uprrp.edu/">UPR-RRP</a></p></li>
-  <li><p>Jos&eacute; Conde - <a href="http://www.rcm.upr.edu/">UPR-RCM</a></p></li>
-  <li><p>Humberto Ortiz-Zuazaga - <a href="http://www.uprrp.edu/">UPR-RRP</a></p></li>
-  <li><p>Juan Sol&aacute; Sloan - <a href="http://www.uprb.edu/">UPR-Bayamon</a></p></li>
-</ul>
-</p>
-</body>
-  </html>
+		<h1>PR Visualization</h1>
 
+		<div align = "left">
+			<select id = "years">
+				<option selected value = 0>2000</option>
+				<option value = 1>2001</option>
+				<option value = 2>2002</option>
+				<option value = 3>2003</option>
+				<option value = 4>2004</option>
+				<option value = 5>2005</option>
+				<option value = 6>2006</option>
+				<option value = 7>2007</option>
+				<option value = 8>2008</option>
+			</select>
+		</div>
+
+		<div align = "right">
+			<select id = "death">
+				<option value = "accident">Accident</option>
+				<option value = "alzheimer">Alzheimer</option>
+				<option value = "cardio">Cardiovascular</option>
+				<option value = "cerebrovascular">Cerebrovascular</option>
+				<option value = "diabetes">Diabetes</option>
+				<option value = "homicide">Homicide</option>
+				<option selected value = "municipio_total">County Total</option>
+				<option value = "nefritis">Nefritis</option>
+				<option value = "pneumonia">Pneumonia</option>
+				<option value = "respiratory">Respiratory</option>
+				<option value = "tumor">Tumor</option>
+			</select>
+		</div>
+
+		<script type = "text/javascript">
+
+			var width = 1200;
+			var height = 700;
+
+			var path = d3.geo.path()
+					.projection(null);
+
+			var color = d3.scale.quantize()
+					.range(["rgb(255, 255, 212)","rgb(254, 227, 145)","rgb(254, 196, 79)",
+						"rgb(254, 153, 41)","rgb(217, 95, 14)","rgb(153, 52, 4)"]);
+
+			var svg = d3.select("body")
+					.append("svg")
+					.attr("width", width)
+					.attr("height", height);
+
+			var gdata;
+
+			var properties = [];
+
+			d3.csv("ypll.csv", function(error, data) {
+
+				//saves the csv in a global variable for later use.
+				gdata = data;
+
+				var column = document.getElementById("death")
+						[document.getElementById("death")
+						.selectedIndex].value;
+
+				color.domain([
+
+					d3.min(data, function(d) { return parseFloat(d[column]); }),
+					d3.max(data, function(d) { return parseFloat(d[column]); })
+
+						]);
+	
+				d3.json("pr.json", function(error, pr) {
+
+					var obj = pr.objects.municipios;
+
+					for(var c = 0; c < obj.geometries.length; c++) {
+
+						obj.geometries[c].properties.year = [];
+
+						}
+
+					for(var i = 0; i < data.length; i++) {
+
+						var property = {};
+						property.id = parseInt(data[i].id);
+						property.municipio_total = parseFloat(data[i].municipio_total);
+						property.cardio = parseFloat(data[i].cardio);
+						property.tumor = parseFloat(data[i].tumor);
+						property.diabetes = parseFloat(data[i].diabetes);
+						property.alzheimer = parseFloat(data[i].alzheimer);
+						property.cerebrovascular = parseFloat(data[i].cerebrovascular);
+						property.respiratory = parseFloat(data[i].respiratory);
+						property.accident = parseFloat(data[i].accident);
+						property.nefritis = parseFloat(data[i].nefritis);
+						property.homicide = parseFloat(data[i].homicide);
+						property.pneumonia = parseFloat(data[i].pneumonia);
+						property.year = parseInt(data[i].year);
+
+						properties.push(property);
+
+						for(var j = 0; j < obj.geometries.length; j++) {
+
+							var prID = obj.geometries[j].properties.id;
+
+							if(properties[i].id == prID) {
+
+								obj.geometries[j].properties.year[properties[i].year - 2000] = properties[i];
+								break;
+
+								}
+
+							}
+
+						}
+
+					//Fill the counties with color
+					svg.selectAll("path")
+						.data(topojson.feature(pr, obj).features)
+						.enter()
+						.append("path")
+						.attr("d", path)
+						.style("fill", function(d) {
+
+							var value = d.properties.year
+									[parseInt(document.getElementById("years")
+									[document.getElementById("years")
+									.selectedIndex].value)][column];
+
+							if(value) { return color(value); }
+
+							else { return "#ccc"; }
+
+							})
+
+						.on("click", function(d) {
+
+							var county = d.properties.name;
+
+							var year = document.getElementById("years").selectedIndex;
+
+							var death = document.getElementById("death")
+								[document.getElementById("death")
+								.selectedIndex].value;
+
+							var value = d.properties.year
+								[parseInt(document.getElementById("years")
+								[year].value)][death];
+
+							alert(county + ": " + parseInt(value));
+
+							})
+
+						.on("mouseover", function() {
+
+							d3.select(this)
+								.style("fill", "green")
+								.style("stroke-width", "1.8");
+
+							})
+
+						.on("mouseout", function(d) {
+
+							d3.select(this)
+								.transition()
+								.duration(250)
+								.style("fill", function(d) {
+
+									var year = document.getElementById("years").selectedIndex;
+
+									var death = document.getElementById("death")
+										[document.getElementById("death")
+										.selectedIndex].value;
+
+									var value = d.properties.year
+										[parseInt(document.getElementById("years")
+										[year].value)][death];
+
+									color.domain([
+
+										d3.min(gdata, function(d) { return parseFloat(d[death]); }),
+										d3.max(gdata, function(d) { return parseFloat(d[death]); })
+
+										]);
+
+									if(value) { return color(value); }
+
+									else { return "#ccc"; }
+
+									})
+
+								.style("stroke-width", "1");
+
+							});
+
+				});
+
+			});
+
+			//Update
+			d3.selectAll("select").on("change", change);
+
+			function change() {
+
+				if(this.id === "years") { transitionYears(); }
+
+				else { transitionDeaths(); }
+
+				};
+
+			function transitionYears() {
+
+				var newYear = document.getElementById("years").selectedIndex;
+
+				var death = document.getElementById("death")
+						[document.getElementById("death")
+						.selectedIndex].value;
+
+				svg.selectAll("path")
+					.transition()
+					.duration(750)
+					.style("fill", function(d) {
+
+						var value = d.properties.year
+								[parseInt(document.getElementById("years")
+								[newYear].value)][death];
+
+						if(value) { return color(value); }
+
+						else { return "#ccc"; }
+
+					});
+
+				};
+
+			function transitionDeaths() {
+
+				var year = document.getElementById("years").selectedIndex;
+
+				var newDeath = document.getElementById("death")
+						[document.getElementById("death")
+						.selectedIndex].value;
+
+				color.domain([
+
+					d3.min(gdata, function(d) { return parseFloat(d[newDeath]); }),
+					d3.max(gdata, function(d) { return parseFloat(d[newDeath]); })
+
+					]);
+
+				svg.selectAll("path")
+					.transition()
+					.duration(750)
+					.style("fill", function(d) {
+
+						var value = d.properties.year
+								[parseInt(document.getElementById("years")
+								[year].value)][newDeath];
+
+						if(value) { return color(value); }
+
+						else { return "#ccc"; }
+
+					});
+
+				};
+						
+		</script>
+
+	</body>
+
+</html>
