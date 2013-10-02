@@ -14,7 +14,7 @@ and Juan Sol&aacute; Sloan [UPR-B](http://www.uprb.edu/).
 
 Figure 1: Years of Potential Life Lost by municipality of residence for 2008.
 
-This prototype currently uses
+The last prototype currently uses
 [atlaspr](https://github.com/commonwealth-of-puerto-rico/atlaspr/),
 one of the API's released for the hackathon by the government of
 Puerto Rico, to render interactive maps of the island. You can see the
@@ -22,3 +22,9 @@ Puerto Rico, to render interactive maps of the island. You can see the
 Commonwealth of Puerto Rico has a [github
 repository](https://github.com/commonwealth-of-puerto-rico) with more
 than a dozen free software projects.
+
+The current prototype does not include atlaspr. It uses D3's
+libraries, and requires TopoJSON's functionality to generate a JSON
+file from which to pull map polygons and map data. It also has
+human-computer interaction which allows the user to analyze
+the results visually.
