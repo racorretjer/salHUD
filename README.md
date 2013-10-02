@@ -14,7 +14,7 @@ and Juan Sol&aacute; Sloan [UPR-B](http://www.uprb.edu/).
 
 Figure 1: Years of Potential Life Lost by municipality of residence for 2008.
 
-The last prototype currently uses
+The last prototype uses
 [atlaspr](https://github.com/commonwealth-of-puerto-rico/atlaspr/),
 one of the API's released for the hackathon by the government of
 Puerto Rico, to render interactive maps of the island. You can see the
@@ -29,4 +29,4 @@ file from which to pull map polygons and map data. It also has
 human-computer interaction which allows the user to analyze
 the results visually.
 
-The Makefile is not, broken, but its not complete.
+The Makefile is not broken, but its not complete.
