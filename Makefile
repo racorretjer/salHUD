@@ -14,7 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-all: ypll-2008.csv ypll-2007.csv ypll-2006.csv ypll-2005.csv ypll-2004.csv ypll-2003.csv ypll-2002.csv ypll-2001.csv ypll-2000.csv
+all: pr.json ypll.csv
+
+pr.json: LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009
+	cd LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009/
+	ogr2ogr -f geoJSON -t_srs ESPG:4326 pr.json LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009.shp
+	topojson --width 1200 --height 700 \
+	--margin 20 -s .25 \
+	-p name=Municipio -p name \
+	-p id=County -p id \
+	-o $@ \
+	-- municipios=LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009.shp
+	cp $@ ../
+	cd ..
+
+LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009:
+	wget -O $@.zip 'http://64.185.222.206:8080/geoserver/wfs?request=GetFeature&typeName=CENTRAL_GIS_PR:LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009&outputFormat=SHAPE-ZIP'
+	unzip $@.zip
+
+ypll.csv: header.csv ypll-2008.csv ypll-2007.csv ypll-2006.csv ypll-2005.csv ypll-2004.csv ypll-2003.csv ypll-2002.csv ypll-2001.csv ypll-2000.csv
+	cat header.csv ypll-2000.csv ypll-2001.csv ypll-2002.csv ypll-2003.csv ypll-2004.csv ypll-2005.csv ypll-2006.csv ypll-2007.csv ypll-2008.csv > $@
+
+header.csv: header.py
+	python header.py
 
 ypll-2008.csv: basic-death-2008.txt basic-death.py
 	python basic-death.py basic-death-2008.txt
