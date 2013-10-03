@@ -29,4 +29,5 @@ file from which to pull map polygons and map data. It also has
 human-computer interaction which allows the user to analyze
 the results visually.
 
-The Makefile is not broken, but its not complete.
+Our next prototype includes a bar chart feature which will display
+information of the town selected from that specific year.
