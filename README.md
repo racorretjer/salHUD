@@ -23,7 +23,7 @@ Commonwealth of Puerto Rico has a [github
 repository](https://github.com/commonwealth-of-puerto-rico) with more
 than a dozen free software projects.
 
-The current prototype does not include atlaspr. It uses D3's
+The current prototype does not include atlaspr. It only uses D3's
 libraries, and requires TopoJSON's functionality to generate a JSON
 file from which to pull map polygons and map data. It also has
 human-computer interaction which allows the user to analyze
