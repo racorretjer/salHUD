@@ -29,5 +29,9 @@ file from which to pull map polygons and map data. It also has
 human-computer interaction which allows the user to analyze
 the results visually.
 
-Our next prototype includes a bar chart feature which will display
+Our next prototype will include a bar chart feature which will display
 information of the town selected from that specific year.
+
+The user must have ogr2ogr and topojson and installed to compile the
+program. The user must haver a SimpleHTTPServer setup in order to see
+the webpage.
