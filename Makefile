@@ -17,8 +17,7 @@
 all: pr.json ypll.csv
 
 pr.json: LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009
-	cd LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009/
-	ogr2ogr -f geoJSON -t_srs ESPG:4326 pr.json LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009.shp
+	ogr2ogr -f geoJSON pr.json LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009.shp
 	topojson --width 1200 --height 700 \
 	--margin 20 -s .25 \
 	-p name=Municipio -p name \
@@ -29,6 +28,8 @@ pr.json: LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009
 	cd ..
 
 LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009:
+	mkdir $@
+	cd $@
 	wget -O $@.zip 'http://64.185.222.206:8080/geoserver/wfs?request=GetFeature&typeName=CENTRAL_GIS_PR:LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009&outputFormat=SHAPE-ZIP'
 	unzip $@.zip
 
