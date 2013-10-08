@@ -82,7 +82,7 @@
 
 				color.domain([
 
-					d3.min(data, function(d) { return parseFloat(d[column]); }),
+					0,
 					d3.max(data, function(d) { return parseFloat(d[column]); })
 
 						]);
@@ -195,7 +195,7 @@
 
 									color.domain([
 
-										d3.min(gdata, function(d) { return parseFloat(d[death]); }),
+										0,
 										d3.max(gdata, function(d) { return parseFloat(d[death]); })
 
 										]);
@@ -260,7 +260,7 @@
 
 				color.domain([
 
-					d3.min(gdata, function(d) { return parseFloat(d[newDeath]); }),
+					0,
 					d3.max(gdata, function(d) { return parseFloat(d[newDeath]); })
 
 					]);
