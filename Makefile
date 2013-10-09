@@ -14,24 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+LIMITES = LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009
+
 all: pr.json ypll.csv
 
-pr.json: LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009
-	ogr2ogr -f geoJSON pr.json LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009.shp
+pr.json: $(LIMITES).shp
+	ogr2ogr -f geoJSON pr.json $(LIMITES).shp
 	topojson --width 1200 --height 700 \
 	--margin 20 -s .25 \
 	-p name=Municipio -p name \
 	-p id=County -p id \
 	-o $@ \
-	-- municipios=LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009.shp
-	cp $@ ../
-	cd ..
+	-- municipios=$(LIMITES).shp
 
-LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009:
-	mkdir $@
-	cd $@
-	wget -O $@.zip 'http://64.185.222.206:8080/geoserver/wfs?request=GetFeature&typeName=CENTRAL_GIS_PR:LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009&outputFormat=SHAPE-ZIP'
-	unzip $@.zip
+$(LIMITES).shp:
+	wget -O $(LIMITES).zip 'http://64.185.222.206:8080/geoserver/wfs?request=GetFeature&typeName=CENTRAL_GIS_PR:LIMITES_LEGALES_MUNICIPIOS_EDICION_MARZO2009&outputFormat=SHAPE-ZIP'
+	unzip $(LIMITES).zip
 
 ypll.csv: header.csv ypll-2008.csv ypll-2007.csv ypll-2006.csv ypll-2005.csv ypll-2004.csv ypll-2003.csv ypll-2002.csv ypll-2001.csv ypll-2000.csv
 	cat header.csv ypll-2000.csv ypll-2001.csv ypll-2002.csv ypll-2003.csv ypll-2004.csv ypll-2005.csv ypll-2006.csv ypll-2007.csv ypll-2008.csv > $@
