@@ -5,7 +5,7 @@
 #sudo docker build -t racorretjer/salhud .
 
 #To run the package, use
-#sudo docker run -p 8000 salhud
+#sudo docker run -p 8000 racorretjer/salhud
 
 #Make note of the port docker is using by typing
 #sudo docker ps -a
